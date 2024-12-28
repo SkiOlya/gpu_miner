@@ -1,4 +1,4 @@
-name: Build GPU Miner
+name: Build and Test GPU Miner
 
 on:
   push:
@@ -10,35 +10,46 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Cibler Ubuntu
+    runs-on: ubuntu-latest  # Utilise l'environnement Ubuntu
 
     steps:
-    # 1. Checkout du code source
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # 2. Installer dépendances
-    - name: Set up CUDA
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential
-        sudo apt-get install -y cmake
-        sudo apt-get install -y nvidia-cuda-toolkit
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake git curl
 
-    # 3. Créer répertoire build
-    - name: Create build directory
-      run: |
-        mkdir -p build
-        cd build
+      - name: Install CUDA 12.6
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nvidia-cuda-toolkit
 
-    # 4. Configurer et compiler
-    - name: Build with CMake
-      run: |
-        cd build
-        cmake ..
-        make -j$(nproc)
+      - name: Set up CUDA paths
+        run: |
+          export CUDA_TOOLKIT_ROOT_DIR="/usr/local/cuda-12.6"
+          export PATH=$CUDA_TOOLKIT_ROOT_DIR/bin:$PATH
+          export LD_LIBRARY_PATH=$CUDA_TOOLKIT_ROOT_DIR/lib64:$LD_LIBRARY_PATH
+          export CUDACXX=$CUDA_TOOLKIT_ROOT_DIR/bin/nvcc
 
-    # 5. Tester programme
-    - name: Run tests
-      run: |
-        ./gpu_miner
+      - name: Verify CUDA installation
+        run: |
+          nvcc --version
+          which nvcc
+
+      - name: Configure the project with CMake
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+
+      - name: Build the project
+        run: |
+          cd build
+          make
+
+      - name: Run tests
+        run: |
+          cd build
+          ./gpu_miner
