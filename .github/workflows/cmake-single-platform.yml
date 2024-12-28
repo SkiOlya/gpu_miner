@@ -23,11 +23,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential cmake git curl wget gnupg
 
-      # Ajout du repository NVIDIA pour CUDA 12.6
+      # Ajout du dépôt NVIDIA pour CUDA 12.6
       - name: Add NVIDIA repository for CUDA 12.6
         run: |
-          sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/7fa2af80.pub
-          sudo sh -c 'echo "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64 /" > /etc/apt/sources.list.d/cuda.list'
+          # Télécharger la clé GPG directement
+          wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/7fa2af80.pub -O /usr/share/keyrings/cuda-keyring.gpg
+          # Ajouter le dépôt NVIDIA
+          echo "deb [signed-by=/usr/share/keyrings/cuda-keyring.gpg] http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64 /" | sudo tee /etc/apt/sources.list.d/cuda.list > /dev/null
           sudo apt-get update
 
       # Installation de CUDA 12.6
