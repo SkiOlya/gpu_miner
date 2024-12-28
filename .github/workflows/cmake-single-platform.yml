@@ -1,0 +1,44 @@
+name: Build GPU Miner
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Cibler Ubuntu
+
+    steps:
+    # 1. Checkout du code source
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # 2. Installer dépendances
+    - name: Set up CUDA
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential
+        sudo apt-get install -y cmake
+        sudo apt-get install -y nvidia-cuda-toolkit
+
+    # 3. Créer répertoire build
+    - name: Create build directory
+      run: |
+        mkdir -p build
+        cd build
+
+    # 4. Configurer et compiler
+    - name: Build with CMake
+      run: |
+        cd build
+        cmake ..
+        make -j$(nproc)
+
+    # 5. Tester programme
+    - name: Run tests
+      run: |
+        ./gpu_miner
