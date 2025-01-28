@@ -11,7 +11,7 @@
 #include "secp256k1.h"
 
 /*
- * sha256.cu Implementation of SHA256 Hashing    
+ * sha256.cu Implementation of SHA256 Hashing
  *
  * Date: 12 June 2019
  * Revision: 1
@@ -24,7 +24,7 @@
  * This file is released into the Public Domain.
  */
 
- 
+
 /*************************** HEADER FILES ***************************/
 #include <stdlib.h>
 #include <memory.h>
@@ -35,16 +35,16 @@
 const int HDR_DEPTH = 256;
 const int d_utxo_set_idx4host_BYTES = 4;
 const int STAKE_MODIFIER_BYTES = 32;
-const int WALLET_UTXOS_HASH_BYTES = 32; // Will be more than 1 million    
-const int WALLET_UTXOS_N_BYTES = 4; // Will be more than 1 million   
-const int WALLET_UTXOS_TIME_FROM_BYTES = 4; // Will be more than 1 million  
+const int WALLET_UTXOS_HASH_BYTES = 32; // Will be more than 1 million
+const int WALLET_UTXOS_N_BYTES = 4; // Will be more than 1 million
+const int WALLET_UTXOS_TIME_FROM_BYTES = 4; // Will be more than 1 million
 const int START_TIME_BYTES = 4;
-const int HASH_MERKLE_ROOT_BYTES = 32; 
-const int HASH_PREV_BLOCK_BYTES = 32; 
-const int N_BITS_BYTES = 4; 
-const int N_TIME_BYTES = 4; 
-const int PREV_STAKE_HASH_BYTES = 32; 
-const int PREV_STAKE_N_BYTES = 4; 
+const int HASH_MERKLE_ROOT_BYTES = 32;
+const int HASH_PREV_BLOCK_BYTES = 32;
+const int N_BITS_BYTES = 4;
+const int N_TIME_BYTES = 4;
+const int PREV_STAKE_HASH_BYTES = 32;
+const int PREV_STAKE_N_BYTES = 4;
 const int BLOCK_SIG_BYTES = 80; // 1st byte is length   either 78 or 79, then normal vchsig(starts with 0x30 then total_len-2   then 8 nonce bytes)  use 80 for nice round number
 
 
@@ -66,7 +66,7 @@ typedef struct {
     uint64_t align12;
     uint8_t h_start_time[START_TIME_BYTES];
     uint64_t align11;
-    uint8_t h_stake_modifier[STAKE_MODIFIER_BYTES];    
+    uint8_t h_stake_modifier[STAKE_MODIFIER_BYTES];
     uint64_t align4;
     uint8_t h_hash_merkle_root[HASH_MERKLE_ROOT_BYTES*HDR_DEPTH];
     uint64_t align5;
@@ -248,7 +248,7 @@ __device__ void cuda_sha256_final(CUDA_SHA256_CTX *ctx, BYTE hash[]) //, WORD no
 		hash[i + 16] = (ctx->state[4] >> (24 - i * 8)) & 0x000000ff;
 		hash[i + 20] = (ctx->state[5] >> (24 - i * 8)) & 0x000000ff;
 		hash[i + 24] = (ctx->state[6] >> (24 - i * 8)) & 0x000000ff;
-		hash[i + 28] = (ctx->state[7] >> (24 - i * 8)) & 0x000000ff;      
+		hash[i + 28] = (ctx->state[7] >> (24 - i * 8)) & 0x000000ff;
 	}
 
 }
@@ -380,7 +380,7 @@ __device__ void secp256k1_u128_accum_u64(secp256k1_uint128 *r, uint64_t a) {
 }
 
 __device__ void secp256k1_u128_rshift(secp256k1_uint128 *r, unsigned int n) {
-   
+
    *r >>= n;
 }
 
@@ -397,7 +397,7 @@ __device__ void secp256k1_u128_from_u64(secp256k1_uint128 *r, uint64_t a) {
 }
 
 __device__ int secp256k1_u128_check_bits(const secp256k1_uint128 *r, unsigned int n) {
-   
+
    return (*r >> n == 0);
 }
 
@@ -411,19 +411,19 @@ __device__ void secp256k1_i128_mul(secp256k1_int128 *r, int64_t a, int64_t b) {
 
 __device__ void secp256k1_i128_accum_mul(secp256k1_int128 *r, int64_t a, int64_t b) {
    int128_t ab = (int128_t)a * b;
-   
+
    *r += ab;
 }
 
 __device__ void secp256k1_i128_det(secp256k1_int128 *r, int64_t a, int64_t b, int64_t c, int64_t d) {
    int128_t ad = (int128_t)a * d;
    int128_t bc = (int128_t)b * c;
-   
+
    *r = ad - bc;
 }
 
 __device__ void secp256k1_i128_rshift(secp256k1_int128 *r, unsigned int n) {
-   
+
    *r >>= n;
 }
 
@@ -432,7 +432,7 @@ __device__ uint64_t secp256k1_i128_to_u64(const secp256k1_int128 *a) {
 }
 
 __device__ int64_t secp256k1_i128_to_i64(const secp256k1_int128 *a) {
-   
+
    return *a;
 }
 
@@ -445,8 +445,8 @@ __device__ int secp256k1_i128_eq_var(const secp256k1_int128 *a, const secp256k1_
 }
 
 __device__ int secp256k1_i128_check_pow2(const secp256k1_int128 *r, unsigned int n, int sign) {
-   
-   
+
+
    return (*r == (int128_t)((uint128_t)sign << n));
 }
 
@@ -472,104 +472,104 @@ __device__  void secp256k1_fe_sqr_inner(uint64_t *r, const uint64_t *a) {
 
     secp256k1_u128_mul(&d, a0*2, a3);
     secp256k1_u128_accum_mul(&d, a1*2, a2);
-    
+
     /* [d 0 0 0] = [p3 0 0 0] */
     secp256k1_u128_mul(&c, a4, a4);
-    
+
     /* [c 0 0 0 0 d 0 0 0] = [p8 0 0 0 0 p3 0 0 0] */
     secp256k1_u128_accum_mul(&d, R, secp256k1_u128_to_u64(&c)); secp256k1_u128_rshift(&c, 64);
-    
-    
+
+
     /* [(c<<12) 0 0 0 0 0 d 0 0 0] = [p8 0 0 0 0 p3 0 0 0] */
     t3 = secp256k1_u128_to_u64(&d) & M; secp256k1_u128_rshift(&d, 52);
-    
-    
+
+
     /* [(c<<12) 0 0 0 0 d t3 0 0 0] = [p8 0 0 0 0 p3 0 0 0] */
 
     a4 *= 2;
     secp256k1_u128_accum_mul(&d, a0, a4);
     secp256k1_u128_accum_mul(&d, a1*2, a3);
     secp256k1_u128_accum_mul(&d, a2, a2);
-    
+
     /* [(c<<12) 0 0 0 0 d t3 0 0 0] = [p8 0 0 0 p4 p3 0 0 0] */
     secp256k1_u128_accum_mul(&d, R << 12, secp256k1_u128_to_u64(&c));
-    
+
     /* [d t3 0 0 0] = [p8 0 0 0 p4 p3 0 0 0] */
     t4 = secp256k1_u128_to_u64(&d) & M; secp256k1_u128_rshift(&d, 52);
-    
-    
+
+
     /* [d t4 t3 0 0 0] = [p8 0 0 0 p4 p3 0 0 0] */
     tx = (t4 >> 48); t4 &= (M >> 4);
-    
-    
+
+
     /* [d t4+(tx<<48) t3 0 0 0] = [p8 0 0 0 p4 p3 0 0 0] */
 
     secp256k1_u128_mul(&c, a0, a0);
-    
+
     /* [d t4+(tx<<48) t3 0 0 c] = [p8 0 0 0 p4 p3 0 0 p0] */
     secp256k1_u128_accum_mul(&d, a1, a4);
     secp256k1_u128_accum_mul(&d, a2*2, a3);
-    
+
     /* [d t4+(tx<<48) t3 0 0 c] = [p8 0 0 p5 p4 p3 0 0 p0] */
     u0 = secp256k1_u128_to_u64(&d) & M; secp256k1_u128_rshift(&d, 52);
-    
-    
+
+
     /* [d u0 t4+(tx<<48) t3 0 0 c] = [p8 0 0 p5 p4 p3 0 0 p0] */
     /* [d 0 t4+(tx<<48)+(u0<<52) t3 0 0 c] = [p8 0 0 p5 p4 p3 0 0 p0] */
     u0 = (u0 << 4) | tx;
-    
+
     /* [d 0 t4+(u0<<48) t3 0 0 c] = [p8 0 0 p5 p4 p3 0 0 p0] */
     secp256k1_u128_accum_mul(&c, u0, R >> 4);
-    
+
     /* [d 0 t4 t3 0 0 c] = [p8 0 0 p5 p4 p3 0 0 p0] */
     r[0] = secp256k1_u128_to_u64(&c) & M; secp256k1_u128_rshift(&c, 52);
-    
-    
+
+
     /* [d 0 t4 t3 0 c r0] = [p8 0 0 p5 p4 p3 0 0 p0] */
 
     a0 *= 2;
     secp256k1_u128_accum_mul(&c, a0, a1);
-    
+
     /* [d 0 t4 t3 0 c r0] = [p8 0 0 p5 p4 p3 0 p1 p0] */
     secp256k1_u128_accum_mul(&d, a2, a4);
     secp256k1_u128_accum_mul(&d, a3, a3);
-    
+
     /* [d 0 t4 t3 0 c r0] = [p8 0 p6 p5 p4 p3 0 p1 p0] */
     secp256k1_u128_accum_mul(&c, secp256k1_u128_to_u64(&d) & M, R); secp256k1_u128_rshift(&d, 52);
-    
-    
+
+
     /* [d 0 0 t4 t3 0 c r0] = [p8 0 p6 p5 p4 p3 0 p1 p0] */
     r[1] = secp256k1_u128_to_u64(&c) & M; secp256k1_u128_rshift(&c, 52);
-    
-    
+
+
     /* [d 0 0 t4 t3 c r1 r0] = [p8 0 p6 p5 p4 p3 0 p1 p0] */
 
     secp256k1_u128_accum_mul(&c, a0, a2);
     secp256k1_u128_accum_mul(&c, a1, a1);
-    
+
     /* [d 0 0 t4 t3 c r1 r0] = [p8 0 p6 p5 p4 p3 p2 p1 p0] */
     secp256k1_u128_accum_mul(&d, a3, a4);
-    
+
     /* [d 0 0 t4 t3 c r1 r0] = [p8 p7 p6 p5 p4 p3 p2 p1 p0] */
     secp256k1_u128_accum_mul(&c, R, secp256k1_u128_to_u64(&d)); secp256k1_u128_rshift(&d, 64);
-    
-    
+
+
     /* [(d<<12) 0 0 0 t4 t3 c r1 r0] = [p8 p7 p6 p5 p4 p3 p2 p1 p0] */
     r[2] = secp256k1_u128_to_u64(&c) & M; secp256k1_u128_rshift(&c, 52);
-    
-    
+
+
     /* [(d<<12) 0 0 0 t4 t3+c r2 r1 r0] = [p8 p7 p6 p5 p4 p3 p2 p1 p0] */
 
     secp256k1_u128_accum_mul(&c, R << 12, secp256k1_u128_to_u64(&d));
     secp256k1_u128_accum_u64(&c, t3);
-    
+
     /* [t4 c r2 r1 r0] = [p8 p7 p6 p5 p4 p3 p2 p1 p0] */
     r[3] = secp256k1_u128_to_u64(&c) & M; secp256k1_u128_rshift(&c, 52);
-    
-    
+
+
     /* [t4+c r3 r2 r1 r0] = [p8 p7 p6 p5 p4 p3 p2 p1 p0] */
     r[4] = secp256k1_u128_to_u64(&c) + t4;
-    
+
     /* [r4 r3 r2 r1 r0] = [p8 p7 p6 p5 p4 p3 p2 p1 p0] */
 }
 
@@ -605,7 +605,7 @@ __device__ void secp256k1_fe_impl_normalize(secp256k1_fe *r) {
     t4 += (t3 >> 52); t3 &= 0xFFFFFFFFFFFFFULL; m &= t3;
 
     /* ... except for a possible carry at bit 48 of t4 (i.e. bit 256 of the field element) */
-    
+
 
     /* At most a single final reduction is needed; check if the value is >= the field characteristic */
     x = (t4 >> 48) | ((t4 == 0x0FFFFFFFFFFFFULL) & (m == 0xFFFFFFFFFFFFFULL)
@@ -619,7 +619,7 @@ __device__ void secp256k1_fe_impl_normalize(secp256k1_fe *r) {
     t4 += (t3 >> 52); t3 &= 0xFFFFFFFFFFFFFULL;
 
     /* If t4 didn't carry to bit 48 already, then it should have after any final reduction */
-    
+
 
     /* Mask off the possible multiple of 2^256 from the final reduction */
     t4 &= 0x0FFFFFFFFFFFFULL;
@@ -641,7 +641,7 @@ __device__ void secp256k1_fe_impl_normalize_weak(secp256k1_fe *r) {
     t4 += (t3 >> 52); t3 &= 0xFFFFFFFFFFFFFULL;
 
     /* ... except for a possible carry at bit 48 of t4 (i.e. bit 256 of the field element) */
-    
+
 
     r->n[0] = t0; r->n[1] = t1; r->n[2] = t2; r->n[3] = t3; r->n[4] = t4;
 }
@@ -661,7 +661,7 @@ __device__ void secp256k1_fe_impl_normalize_var(secp256k1_fe *r) {
     t4 += (t3 >> 52); t3 &= 0xFFFFFFFFFFFFFULL; m &= t3;
 
     /* ... except for a possible carry at bit 48 of t4 (i.e. bit 256 of the field element) */
-    
+
 
     /* At most a single final reduction is needed; check if the value is >= the field characteristic */
     x = (t4 >> 48) | ((t4 == 0x0FFFFFFFFFFFFULL) & (m == 0xFFFFFFFFFFFFFULL)
@@ -675,7 +675,7 @@ __device__ void secp256k1_fe_impl_normalize_var(secp256k1_fe *r) {
         t4 += (t3 >> 52); t3 &= 0xFFFFFFFFFFFFFULL;
 
         /* If t4 didn't carry to bit 48 already, then it should have after any final reduction */
-        
+
 
         /* Mask off the possible multiple of 2^256 from the final reduction */
         t4 &= 0x0FFFFFFFFFFFFULL;
@@ -702,7 +702,7 @@ __device__ int secp256k1_fe_impl_normalizes_to_zero(const secp256k1_fe *r) {
                                                 z0 |= t4; z1 &= t4 ^ 0xF000000000000ULL;
 
     /* ... except for a possible carry at bit 48 of t4 (i.e. bit 256 of the field element) */
-    
+
 
     return (z0 == 0) | (z1 == 0xFFFFFFFFFFFFFULL);
 }
@@ -743,7 +743,7 @@ __device__ int secp256k1_fe_impl_normalizes_to_zero_var(const secp256k1_fe *r) {
                                                 z0 |= t4; z1 &= t4 ^ 0xF000000000000ULL;
 
     /* ... except for a possible carry at bit 48 of t4 (i.e. bit 256 of the field element) */
-    
+
 
     return (z0 == 0) | (z1 == 0xFFFFFFFFFFFFFULL);
 }
@@ -862,9 +862,9 @@ __device__ void secp256k1_fe_impl_get_b32(unsigned char *r, const secp256k1_fe *
 
 __device__ void secp256k1_fe_impl_negate_unchecked(secp256k1_fe *r, const secp256k1_fe *a, int m) {
     /* For all legal values of m (0..31), the following properties hold: */
-    
-    
-    
+
+
+
 
     /* Due to the properties above, the left hand in the subtractions below is never less than
      * the right hand. */
@@ -918,18 +918,18 @@ __device__ void secp256k1_fe_mul_inner(uint64_t *r, const uint64_t *a, const uin
     secp256k1_u128_accum_mul(&d, a1, b[2]);
     secp256k1_u128_accum_mul(&d, a2, b[1]);
     secp256k1_u128_accum_mul(&d, a3, b[0]);
-    
+
     /* [d 0 0 0] = [p3 0 0 0] */
     secp256k1_u128_mul(&c, a4, b[4]);
-    
+
     /* [c 0 0 0 0 d 0 0 0] = [p8 0 0 0 0 p3 0 0 0] */
     secp256k1_u128_accum_mul(&d, R, secp256k1_u128_to_u64(&c)); secp256k1_u128_rshift(&c, 64);
-    
-    
+
+
     /* [(c<<12) 0 0 0 0 0 d 0 0 0] = [p8 0 0 0 0 p3 0 0 0] */
     t3 = secp256k1_u128_to_u64(&d) & M; secp256k1_u128_rshift(&d, 52);
-    
-    
+
+
     /* [(c<<12) 0 0 0 0 d t3 0 0 0] = [p8 0 0 0 0 p3 0 0 0] */
 
     secp256k1_u128_accum_mul(&d, a0, b[4]);
@@ -937,91 +937,91 @@ __device__ void secp256k1_fe_mul_inner(uint64_t *r, const uint64_t *a, const uin
     secp256k1_u128_accum_mul(&d, a2, b[2]);
     secp256k1_u128_accum_mul(&d, a3, b[1]);
     secp256k1_u128_accum_mul(&d, a4, b[0]);
-    
+
     /* [(c<<12) 0 0 0 0 d t3 0 0 0] = [p8 0 0 0 p4 p3 0 0 0] */
     secp256k1_u128_accum_mul(&d, R << 12, secp256k1_u128_to_u64(&c));
-    
+
     /* [d t3 0 0 0] = [p8 0 0 0 p4 p3 0 0 0] */
     t4 = secp256k1_u128_to_u64(&d) & M; secp256k1_u128_rshift(&d, 52);
-    
-    
+
+
     /* [d t4 t3 0 0 0] = [p8 0 0 0 p4 p3 0 0 0] */
     tx = (t4 >> 48); t4 &= (M >> 4);
-    
-    
+
+
     /* [d t4+(tx<<48) t3 0 0 0] = [p8 0 0 0 p4 p3 0 0 0] */
 
     secp256k1_u128_mul(&c, a0, b[0]);
-    
+
     /* [d t4+(tx<<48) t3 0 0 c] = [p8 0 0 0 p4 p3 0 0 p0] */
     secp256k1_u128_accum_mul(&d, a1, b[4]);
     secp256k1_u128_accum_mul(&d, a2, b[3]);
     secp256k1_u128_accum_mul(&d, a3, b[2]);
     secp256k1_u128_accum_mul(&d, a4, b[1]);
-    
+
     /* [d t4+(tx<<48) t3 0 0 c] = [p8 0 0 p5 p4 p3 0 0 p0] */
     u0 = secp256k1_u128_to_u64(&d) & M; secp256k1_u128_rshift(&d, 52);
-    
-    
+
+
     /* [d u0 t4+(tx<<48) t3 0 0 c] = [p8 0 0 p5 p4 p3 0 0 p0] */
     /* [d 0 t4+(tx<<48)+(u0<<52) t3 0 0 c] = [p8 0 0 p5 p4 p3 0 0 p0] */
     u0 = (u0 << 4) | tx;
-    
+
     /* [d 0 t4+(u0<<48) t3 0 0 c] = [p8 0 0 p5 p4 p3 0 0 p0] */
     secp256k1_u128_accum_mul(&c, u0, R >> 4);
-    
+
     /* [d 0 t4 t3 0 0 c] = [p8 0 0 p5 p4 p3 0 0 p0] */
     r[0] = secp256k1_u128_to_u64(&c) & M; secp256k1_u128_rshift(&c, 52);
-    
-    
+
+
     /* [d 0 t4 t3 0 c r0] = [p8 0 0 p5 p4 p3 0 0 p0] */
 
     secp256k1_u128_accum_mul(&c, a0, b[1]);
     secp256k1_u128_accum_mul(&c, a1, b[0]);
-    
+
     /* [d 0 t4 t3 0 c r0] = [p8 0 0 p5 p4 p3 0 p1 p0] */
     secp256k1_u128_accum_mul(&d, a2, b[4]);
     secp256k1_u128_accum_mul(&d, a3, b[3]);
     secp256k1_u128_accum_mul(&d, a4, b[2]);
-    
+
     /* [d 0 t4 t3 0 c r0] = [p8 0 p6 p5 p4 p3 0 p1 p0] */
     secp256k1_u128_accum_mul(&c, secp256k1_u128_to_u64(&d) & M, R); secp256k1_u128_rshift(&d, 52);
-    
-    
+
+
     /* [d 0 0 t4 t3 0 c r0] = [p8 0 p6 p5 p4 p3 0 p1 p0] */
     r[1] = secp256k1_u128_to_u64(&c) & M; secp256k1_u128_rshift(&c, 52);
-    
-    
+
+
     /* [d 0 0 t4 t3 c r1 r0] = [p8 0 p6 p5 p4 p3 0 p1 p0] */
 
     secp256k1_u128_accum_mul(&c, a0, b[2]);
     secp256k1_u128_accum_mul(&c, a1, b[1]);
     secp256k1_u128_accum_mul(&c, a2, b[0]);
-    
+
     /* [d 0 0 t4 t3 c r1 r0] = [p8 0 p6 p5 p4 p3 p2 p1 p0] */
     secp256k1_u128_accum_mul(&d, a3, b[4]);
     secp256k1_u128_accum_mul(&d, a4, b[3]);
-    
+
     /* [d 0 0 t4 t3 c t1 r0] = [p8 p7 p6 p5 p4 p3 p2 p1 p0] */
     secp256k1_u128_accum_mul(&c, R, secp256k1_u128_to_u64(&d)); secp256k1_u128_rshift(&d, 64);
-    
-    
+
+
     /* [(d<<12) 0 0 0 t4 t3 c r1 r0] = [p8 p7 p6 p5 p4 p3 p2 p1 p0] */
 
     r[2] = secp256k1_u128_to_u64(&c) & M; secp256k1_u128_rshift(&c, 52);
-    
-    
+
+
     /* [(d<<12) 0 0 0 t4 t3+c r2 r1 r0] = [p8 p7 p6 p5 p4 p3 p2 p1 p0] */
     secp256k1_u128_accum_mul(&c, R << 12, secp256k1_u128_to_u64(&d));
     secp256k1_u128_accum_u64(&c, t3);
-    
+
     /* [t4 c r2 r1 r0] = [p8 p7 p6 p5 p4 p3 p2 p1 p0] */
     r[3] = secp256k1_u128_to_u64(&c) & M; secp256k1_u128_rshift(&c, 52);
-    
-    
+
+
     /* [t4+c r3 r2 r1 r0] = [p8 p7 p6 p5 p4 p3 p2 p1 p0] */
     r[4] = secp256k1_u128_to_u64(&c) + t4;
-    
+
     /* [r4 r3 r2 r1 r0] = [p8 p7 p6 p5 p4 p3 p2 p1 p0] */
 }
 
@@ -1072,7 +1072,7 @@ __device__ void secp256k1_fe_impl_half(secp256k1_fe *r) {
     t3 += mask;
     t4 += mask >> 4;
 
-    
+
 
     /* t0..t3: added <= C/2
      *     t4: added <= D/2
@@ -1149,7 +1149,7 @@ __device__ void secp256k1_gej_add_ge(secp256k1_gej *r, const secp256k1_gej *a, c
      *  case that either point is infinity, or that y1 = -y2. We handle
      *  these cases in the following ways:
      *
-     *    - If b is infinity we simply bail by means of a 
+     *    - If b is infinity we simply bail by means of a
      *
      *    - If a is infinity, we detect this, and at the end of the
      *      computation replace the result (which will be meaningless,
@@ -1270,7 +1270,7 @@ __device__ void secp256k1_ecmult_gen(const secp256k1_ecmult_gen_context *ctx, se
     secp256k1_ge_storage adds;
     secp256k1_scalar gnb;
     int i, j, n_i;
-    
+
     memset(&adds, 0, sizeof(adds));
     *r = ctx->initial;
     /* Blind scalar/point multiplication by computing (n-b)G + bG instead of nG. */
@@ -2408,7 +2408,7 @@ __device__ size_t Sign(const uint8_t *p_hash, uint8_t * p_vchSig, secp256k1_ecmu
     // {
     //     printf("%02X",sig.data[z]);
     // }
-    // printf("\n\n");    
+    // printf("\n\n");
 
     secp256k1_ecdsa_signature_serialize_der(p_vchSig, &nSigLen, &sig);
 
@@ -2417,7 +2417,7 @@ __device__ size_t Sign(const uint8_t *p_hash, uint8_t * p_vchSig, secp256k1_ecmu
     // {
     //     printf("%02X",p_vchSig[z]);
     // }
-    // printf("\n\n");        
+    // printf("\n\n");
 
     return nSigLen;
 }
@@ -2426,7 +2426,7 @@ __device__ size_t Sign(const uint8_t *p_hash, uint8_t * p_vchSig, secp256k1_ecmu
 
 
 __device__ void sha256_hash(BYTE* signature, WORD sig_len, BYTE* hash)//, WORD* nonce)
-{ 
+{
 	// WORD thread = blockIdx.x * blockDim.x + threadIdx.x;
 	// if (thread >= total_threads)
 	// {
@@ -2499,6 +2499,53 @@ __device__ uint256 addUint256_64(const uint256& a, uint64_t b) {
 
 
 
+// Разжимаем 32-битный compact (nBits) в 256-битное big-endian-число target[32].
+__device__ void ExpandCompact(uint32_t nBits, unsigned char target[32])
+{
+    // Обнуляем target
+    memset(target, 0, 32);
+
+    // nBits = 0x e8 ff 00 1d, например.
+    // старший байт = nSize, младшие 3 байта = nWord (мантисса)
+    int nSize = (nBits >> 24) & 0xFF; // «экспонента»
+    uint32_t nWord = nBits & 0x007FFFFF; // «мантисса» (23 бита)
+
+    if (nSize <= 3) {
+        // Подгоняем nWord вправо
+        nWord >>= 8 * (3 - nSize);
+        // Пишем big-endian в конец target
+        target[31] = (unsigned char)(nWord & 0xFF);
+        target[30] = (unsigned char)((nWord >> 8) & 0xFF);
+        target[29] = (unsigned char)((nWord >> 16) & 0xFF);
+    } else {
+        // Пишем nWord в младшие 3 байта конца, потом «сдвигаем влево»
+        target[31] = (unsigned char)(nWord & 0xFF);
+        target[30] = (unsigned char)((nWord >> 8) & 0xFF);
+        target[29] = (unsigned char)((nWord >> 16) & 0xFF);
+
+        for (int i = 0; i < (nSize - 3); i++) {
+            // каждый шаг «<< 8» по big-endian
+            for (int j = 0; j < 31; j++) {
+                target[j] = target[j+1];
+            }
+            target[31] = 0;
+        }
+    }
+}
+
+
+// Сравниваем два 256-битных числа (big-endian): (hash <= target)?
+__device__ bool CheckHashMeetsTarget(const unsigned char hash[32],
+                                     const unsigned char target[32])
+{
+    // Идём от [0..31], сравнивая как big-endian
+    for (int i = 0; i < 32; i++) {
+        if (hash[i] < target[i]) return true;  // hash < target
+        if (hash[i] > target[i]) return false; // hash > target
+    }
+    // Если все байты равны, значит hash == target, тоже подходит
+    return true;
+}
 
 
 
@@ -2519,7 +2566,7 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
     uint256 mud;
 
     uint64_t thread = (uint64_t)blockIdx.x * (uint64_t)blockDim.x + (uint64_t)threadIdx.x;
-    uint64_t gpu_num = *d_gpu_num; 
+    uint64_t gpu_num = *d_gpu_num;
 
     uint32_t throttle = 0;
 
@@ -2531,7 +2578,7 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
 
 
     //  GPU uses upper half of nonce, CPU will use lower half
-    uint128_t offset = thread*0x0000100000000000ULL + gpu_num*0x0000001000000000ULL + 0x8000000000000000ULL; 
+    uint128_t offset = thread*0x0000100000000000ULL + gpu_num*0x0000001000000000ULL + 0x8000000000000000ULL;
 
     uint128_t nonce = offset;
 
@@ -2553,7 +2600,7 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
             uint32_t time;
             // assuming 16,000 threads, 1200000/15000 = 80 per thread.
             int const AMOUNT_PER_THREAD = 133;
-            
+
             memcpy(&time, &d_start_time[0],4);
             uint32_t offset1 = thread*AMOUNT_PER_THREAD; // each thread can do
 
@@ -2566,12 +2613,12 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
 
             // sweep up to 10 minutes ahead, if we find a solution, we will take much time on stage2 before we find it and maybe
             // by the time stage2 solution is found, the time is valid and not too far in the future...
-            for ( uint32_t xxx=0; xxx<100000; xxx++ ) 
+            for ( uint32_t xxx=0; xxx<100000; xxx++ )
             {
                 if( !d_is_stage1[0] )
                 {
                     // Need to go to stage2 now!!!>
-                    printf("====GOING to STAGE2 NOW====:%d\n", thread);               
+                    printf("====GOING to STAGE2 NOW====:%d\n", thread);
                     nonce = offset; // this might be the better place to reset the nonce for stage2
                     throttle = 0;
                     break;
@@ -2585,7 +2632,7 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
                 }
 
                 time++;
-            
+
 
                 for ( uint32_t utxo_set_idx=offset1; utxo_set_idx<(offset1+AMOUNT_PER_THREAD); utxo_set_idx++ )
                 {
@@ -2593,13 +2640,13 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
                     {
                         // Need to go to stage2 now!!!>
                         break;
-                    }       
+                    }
 
                     if( utxo_set_idx >= WALLET_UTXOS_LENGTH )
                     {
                         // finished looking
                         break;
-                    }                                      
+                    }
                     //=======================STAGE1====================================
                     // // Calculate hash
                     // CDataStream ss(SER_GETHASH, 0);
@@ -2646,12 +2693,12 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
                         //printf("abcdefg:%02X %02X %02X %02X %02X %02X %02X\n",a,b,c,d,e,f,g);
                         //     CDataStream ss(SER_GETHASH, 0);
 
-                        //     ss << chain_active[h-a]->GetBlockHeader_hashMerkleRoot() << 
-                        //         chain_active[h-b]->GetBlockHeader_hashPrevBlock() << 
-                        //         chain_active[h-c]->GetBlockHeader_nBits() << 
+                        //     ss << chain_active[h-a]->GetBlockHeader_hashMerkleRoot() <<
+                        //         chain_active[h-b]->GetBlockHeader_hashPrevBlock() <<
+                        //         chain_active[h-c]->GetBlockHeader_nBits() <<
                         //         chain_active[h-d]->GetBlockHeader_nTime() <<
-                        //         chain_active[h-e]->GetBlockHeader_prevoutStakehash() << 
-                        //         chain_active[h-f]->GetBlockHeader_prevoutStaken() << 
+                        //         chain_active[h-e]->GetBlockHeader_prevoutStakehash() <<
+                        //         chain_active[h-f]->GetBlockHeader_prevoutStaken() <<
                         //         chain_active[h-g]->GetBlockHeader_vchBlockSig();
                         memcpy(&ss_for_hashing[0], &d_hash_merkle_root[a*32],32);
                         memcpy(&ss_for_hashing[32], &d_hash_prev_block[b*32],32);
@@ -2661,8 +2708,8 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
                         memcpy(&ss_for_hashing[104], &d_prev_stake_n[f*4],4);
                         unsigned int total_len = 32 + 32 + 4 + 4 + 32 + 4;
 
-            
-                        
+
+
                         // 0x30 is start byte for signature, next byte is length of sig - 2
 
                         if ( (d_block_sig[g*80] == 0x30) && (d_block_sig[g*80+1] == 68) ) // 70 for sig  8 bytes for nonce appended in HDR
@@ -2678,22 +2725,28 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
                             total_len += 80; // added for index 108 insertion
                         }
                         else
-                        {   
+                        {
                             total_len = 0; // why we here????
                         }
-                        
+
                         sha256_hash(&ss_for_hashing[0], total_len, hash_output);
 
+                        uint32_t nBitsLocal = 0;
+                        memcpy(&nBitsLocal, &d_n_bits[c*4], 4);
+                        unsigned char target[32];
+                        ExpandCompact(nBitsLocal, target);
 
+                        bool meets = CheckHashMeetsTarget(hash_output, target);
                         //     hashProofOfStake = Hash(ss);
 
                         //     actual = UintToArith256(hashProofOfStake);
                         //     if (actual <= bnTarget)
-                        //         return true;   
+                        //         return true;
 
                         // output with zeros is:  805966DDB62F91D66903FD81F6B30DCC3A351E1FCBA72679C224AE77667E0000            <------- Flipped like this look for leading zeros
-                        if ( (hash_output[31] == 0) && (hash_output[30] == 0) && (hash_output[29] == 0) && (hash_output[28] == 0) && ((hash_output[27]&0xC0 ) == 0) )
-                        {                       
+                        if (meets)
+//                         if ( (hash_output[31] == 0) && (hash_output[30] == 0) && (hash_output[29] == 0) && (hash_output[28] == 0) && ((hash_output[27]&0xC0 ) == 0) )
+                        {
                             // possible solution found, let the host know and go try more utxos
                             memcpy( &d_utxo_set_idx4host[0],  &utxo_set_idx, 4);
                             memcpy( &d_utxo_set_time4host[0],  &time, 4);
@@ -2703,38 +2756,38 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
                             {
                                 printf("%02X",hash_output[z]);
                             }
-                            printf("\n");       
-                            printf("d_stake_modifier\n");  
+                            printf("\n");
+                            printf("d_stake_modifier\n");
                             for(int z=0;z<32;z++)
                             {
                                 printf("%02X",d_stake_modifier[z]);
                             }
-                            printf("\n");      
-                            printf("d_utxos_block_from_time\n");  
+                            printf("\n");
+                            printf("d_utxos_block_from_time\n");
                             for(int z=0;z<4;z++)
                             {
                                 printf("%02X",d_utxos_block_from_time[utxo_set_idx*4+z]);
                             }
-                            printf("\n");  
-                            printf("d_utxos_hash\n");  
+                            printf("\n");
+                            printf("d_utxos_hash\n");
                             for(int z=0;z<32;z++)
                             {
                                 printf("%02X",d_utxos_hash[utxo_set_idx*32+z]);
                             }
-                            printf("\n");  
-                            printf("d_utxos_n\n");  
+                            printf("\n");
+                            printf("d_utxos_n\n");
                             for(int z=0;z<4;z++)
                             {
                                 printf("%02X",d_utxos_n[utxo_set_idx*4+z]);
                             }
-                            printf("\n");  
+                            printf("\n");
                             printf("THREAD: %016llx\n", thread);
                             printf("PoS IDX: %d\n", utxo_set_idx);
                             printf("Time: %d\n", time);
-                           
+
                             break;
                         }
-                                            
+
                     }
 
                 }
@@ -2744,7 +2797,7 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
             // if ( thread == 0 )
             // {
             //     //printf("END\n");
-            // }            
+            // }
 
         }
         /////////////====================================    STAGE2    ====================================/////////////
@@ -2754,7 +2807,7 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
             // {
             //     printf("NONCE: %016x\n", nonce);
             // }
-            
+
             mud = addUint256_64(hash_no_sig, nonce);
 
             memcpy(&mud_array[0],&mud.data[0],8);
@@ -2779,14 +2832,20 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
             // need to add the other 9 bytes in front of the vch [nonce  vchlen      vchsig ..........]
             sha256_hash(&ss_for_hashing[0], sig_len+9, hash_output);
 
+            uint32_t nBitsLocal = 0;
+            memcpy(&nBitsLocal, &d_n_bits[0], 4);
+            unsigned char target[32];
+            ExpandCompact(nBitsLocal, target);
+            bool meets = CheckHashMeetsTarget(hash_output, target);
 
             // output with zeros is:  805966DDB62F91D66903FD81F6B30DCC3A351E1FCBA72679C224AE77667E0000            <------- Flipped like this look for leading zeros
-            if ( (hash_output[31] == 0) && (hash_output[30] == 0) && (hash_output[29] == 0) && ((hash_output[28]&0xFC) == 0) )
+            if (meets)
+//             if ( (hash_output[31] == 0) && (hash_output[30] == 0) && (hash_output[29] == 0) && ((hash_output[28]&0xFC) == 0) )
             //if ( (hash_output[31] == 0) && (hash_output[30] == 0) && (hash_output[29] == 0) ) //&& (hash_output[28] == 0) )
-            { 
-                      
+            {
+
                 memcpy( &nonce4host[0],  &nonce, 8);
-                
+
                 printf("========================PoW BLOCK FOUND========================\n");
                 printf("THREAD: %016llx\n", thread);
                 printf("NONCE: %016llx\n", nonce);
@@ -2795,18 +2854,18 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
                 {
                     printf("%02X",hash_output[z]);
                 }
-                printf("\n\n"); 
+                printf("\n\n");
             }
-            
+
             // if ( thread == 1000 )
             // {
             // printf("THREAD: %016x\n", thread);
             // printf("NONCE: %016x\n", nonce);
-            // }       
+            // }
 
 
 
-            
+
 
             // if ( (ctx_data_prev == ctx_data[0]) && (key_data_prev == key_data[0]) && (hash_no_sig_data_prev == hash_no_sig_in[0]) )
             // {
@@ -2856,7 +2915,7 @@ __global__ void cuda_miner(BYTE* d_gpu_num, BYTE* d_is_stage1, BYTE* key_data, B
                     memcpy( &hash_no_sig.data[0],  &hash_no_sig_in[0], 8);
                     memcpy( &hash_no_sig.data[1],  &hash_no_sig_in[8], 8);
                     memcpy( &hash_no_sig.data[2], &hash_no_sig_in[16], 8);
-                    memcpy( &hash_no_sig.data[3], &hash_no_sig_in[24], 8);     
+                    memcpy( &hash_no_sig.data[3], &hash_no_sig_in[24], 8);
 
 
                 }
@@ -2945,34 +3004,34 @@ int main( int argc, char* argv[] ) {
 
 
     uint8_t *d_key_data;
-    uint8_t *h_key_data = new uint8_t[KEY_SIZE_BYTES];    
+    uint8_t *h_key_data = new uint8_t[KEY_SIZE_BYTES];
 
 
 
     uint8_t *d_hash_no_sig_data;
-    uint8_t *h_hash_no_sig_data = new uint8_t[HASH_NO_SIG_SIZE_BYTES];      
+    uint8_t *h_hash_no_sig_data = new uint8_t[HASH_NO_SIG_SIZE_BYTES];
 
 
     uint8_t *d_nonce_data;
-    uint8_t *h_nonce_data = new uint8_t[NONCE_SIZE_BYTES];      
+    uint8_t *h_nonce_data = new uint8_t[NONCE_SIZE_BYTES];
 
         //////////////////////STAGE1==================
 
     uint8_t *d_utxo_set_idx4host;
-    uint8_t *h_utxo_set_idx4host = new uint8_t[d_utxo_set_idx4host_BYTES];   
+    uint8_t *h_utxo_set_idx4host = new uint8_t[d_utxo_set_idx4host_BYTES];
     uint8_t *d_utxo_set_time4host;
-    uint8_t *h_utxo_set_time4host = new uint8_t[d_utxo_set_idx4host_BYTES];       
+    uint8_t *h_utxo_set_time4host = new uint8_t[d_utxo_set_idx4host_BYTES];
 
     uint8_t *d_utxos_block_from_time;
-    uint8_t *h_utxos_block_from_time = new uint8_t[WALLET_UTXOS_TIME_FROM_BYTES*WALLET_UTXOS_LENGTH];   
+    uint8_t *h_utxos_block_from_time = new uint8_t[WALLET_UTXOS_TIME_FROM_BYTES*WALLET_UTXOS_LENGTH];
 
 
     uint8_t *d_utxos_hash;
     uint8_t *h_utxos_hash = new uint8_t[WALLET_UTXOS_HASH_BYTES*WALLET_UTXOS_LENGTH]; // 256 bits per hash
 
- 
+
     uint8_t *d_utxos_n;
-    uint8_t *h_utxos_n = new uint8_t[WALLET_UTXOS_N_BYTES*WALLET_UTXOS_LENGTH]; 
+    uint8_t *h_utxos_n = new uint8_t[WALLET_UTXOS_N_BYTES*WALLET_UTXOS_LENGTH];
 
 
     uint8_t *d_start_time;
@@ -2989,11 +3048,11 @@ int main( int argc, char* argv[] ) {
 
 
     uint8_t *d_n_bits;
-    uint8_t *h_n_bits = new uint8_t[N_BITS_BYTES*HDR_DEPTH]; 
+    uint8_t *h_n_bits = new uint8_t[N_BITS_BYTES*HDR_DEPTH];
 
 
     uint8_t *d_n_time;
-    uint8_t *h_n_time = new uint8_t[N_TIME_BYTES*HDR_DEPTH]; 
+    uint8_t *h_n_time = new uint8_t[N_TIME_BYTES*HDR_DEPTH];
 
 
     uint8_t *d_prev_stake_hash;
@@ -3001,15 +3060,15 @@ int main( int argc, char* argv[] ) {
 
 
     uint8_t *d_prev_stake_n;
-    uint8_t *h_prev_stake_n = new uint8_t[PREV_STAKE_N_BYTES*HDR_DEPTH];  
+    uint8_t *h_prev_stake_n = new uint8_t[PREV_STAKE_N_BYTES*HDR_DEPTH];
 
 
     uint8_t *d_block_sig;
-    uint8_t *h_block_sig = new uint8_t[BLOCK_SIG_BYTES*HDR_DEPTH]; 
+    uint8_t *h_block_sig = new uint8_t[BLOCK_SIG_BYTES*HDR_DEPTH];
 
-    
+
     uint8_t *d_stake_modifier;
-    uint8_t *h_stake_modifier = new uint8_t[STAKE_MODIFIER_BYTES]; 
+    uint8_t *h_stake_modifier = new uint8_t[STAKE_MODIFIER_BYTES];
     ///////////////////////////////////////////////////////////////////////////
 
 
@@ -3059,7 +3118,7 @@ int main( int argc, char* argv[] ) {
     // Initialize data on the host (CPU)
     for (int i = 0; i < HASH_NO_SIG_SIZE_BYTES; ++i) {
         h_hash_no_sig_data[i] = 0;
-    }    
+    }
 
 
     // Allocate memory on the device
@@ -3068,7 +3127,7 @@ int main( int argc, char* argv[] ) {
     // Initialize data on the host (CPU)
     for (int i = 0; i < NONCE_SIZE_BYTES; ++i) {
         h_nonce_data[i] = 0;
-    }    
+    }
 
 
     // Allocate memory on the device
@@ -3078,23 +3137,23 @@ int main( int argc, char* argv[] ) {
     for (int i = 0; i < d_utxo_set_idx4host_BYTES; ++i) {
         h_utxo_set_idx4host[i] = 0;
         h_utxo_set_time4host[i] = 0;
-    }   
+    }
 
 
     // Initialize data on the host (CPU)
     for (int i = 0; i < START_TIME_BYTES; ++i) {
         h_start_time[i] = 0;
-    }   
+    }
 
     // Initialize data on the host (CPU)
     for (int i = 0; i < STAKE_MODIFIER_BYTES; ++i) {
         h_stake_modifier[i] = 5;
-    }       
-
-    
+    }
 
 
-    
+
+
+
 
     // Allocate memory on the device
     cudaMalloc(&d_stake_modifier, STAKE_MODIFIER_BYTES);
@@ -3108,7 +3167,7 @@ int main( int argc, char* argv[] ) {
     cudaMalloc(&d_n_time, N_TIME_BYTES*HDR_DEPTH);
     cudaMalloc(&d_prev_stake_hash, PREV_STAKE_HASH_BYTES*HDR_DEPTH);
     cudaMalloc(&d_prev_stake_n, PREV_STAKE_N_BYTES*HDR_DEPTH);
-    cudaMalloc(&d_block_sig, BLOCK_SIG_BYTES*HDR_DEPTH); // 1st byte is length   either 70 or 71  unused last byte if 70 bytes 
+    cudaMalloc(&d_block_sig, BLOCK_SIG_BYTES*HDR_DEPTH); // 1st byte is length   either 70 or 71  unused last byte if 70 bytes
     cudaMalloc(&d_stake_modifier, STAKE_MODIFIER_BYTES);
 
 
@@ -3116,7 +3175,7 @@ int main( int argc, char* argv[] ) {
     // Copy the data to the GPU
     cudaMemcpy(d_gpu_num, h_gpu_num, 1, cudaMemcpyHostToDevice);
 
-    // Stage2 stuff  
+    // Stage2 stuff
     cudaMemcpy(d_is_stage1, h_is_stage1, 1, cudaMemcpyHostToDevice);
     cudaMemcpy(d_ctx_data, h_ctx_data, CTX_SIZE_BYTES, cudaMemcpyHostToDevice);
     cudaMemcpy(d_key_data, h_key_data, KEY_SIZE_BYTES, cudaMemcpyHostToDevice);
@@ -3126,7 +3185,7 @@ int main( int argc, char* argv[] ) {
     cudaMemcpy(d_utxo_set_time4host, h_utxo_set_time4host, d_utxo_set_idx4host_BYTES, cudaMemcpyHostToDevice);
 
     // Stage1 stuff
-    
+
     cudaMemcpy(d_utxos_block_from_time, h_utxos_block_from_time, WALLET_UTXOS_TIME_FROM_BYTES*WALLET_UTXOS_LENGTH, cudaMemcpyHostToDevice);
     cudaMemcpy(d_utxos_hash, h_utxos_hash, WALLET_UTXOS_HASH_BYTES*WALLET_UTXOS_LENGTH, cudaMemcpyHostToDevice);
     cudaMemcpy(d_utxos_n, h_utxos_n, WALLET_UTXOS_N_BYTES*WALLET_UTXOS_LENGTH, cudaMemcpyHostToDevice);
@@ -3137,8 +3196,8 @@ int main( int argc, char* argv[] ) {
     cudaMemcpy(d_n_time, h_n_time, N_TIME_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice);
     cudaMemcpy(d_prev_stake_hash, h_prev_stake_hash, PREV_STAKE_HASH_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice);
     cudaMemcpy(d_prev_stake_n, h_prev_stake_n, PREV_STAKE_N_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_block_sig, h_block_sig, BLOCK_SIG_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice); // 1st byte is length   either 70 or 71  unused last byte if 70 bytes 
-    cudaMemcpy(d_stake_modifier, h_stake_modifier, STAKE_MODIFIER_BYTES, cudaMemcpyHostToDevice); // 1st byte is length   either 70 or 71  unused last byte if 70 bytes 
+    cudaMemcpy(d_block_sig, h_block_sig, BLOCK_SIG_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice); // 1st byte is length   either 70 or 71  unused last byte if 70 bytes
+    cudaMemcpy(d_stake_modifier, h_stake_modifier, STAKE_MODIFIER_BYTES, cudaMemcpyHostToDevice); // 1st byte is length   either 70 or 71  unused last byte if 70 bytes
 
 
 
@@ -3150,14 +3209,14 @@ int main( int argc, char* argv[] ) {
     // Tell the miner which GPU number it is
     cudaMemcpyAsync(d_gpu_num, h_gpu_num, 1, cudaMemcpyHostToDevice, stream);
 
-    // Copy the modified data from the host back to the GPU asynchronously  
+    // Copy the modified data from the host back to the GPU asynchronously
     cudaMemcpyAsync(d_is_stage1, h_is_stage1, 1, cudaMemcpyHostToDevice, stream);
     cudaMemcpyAsync(d_ctx_data, h_ctx_data, CTX_SIZE_BYTES, cudaMemcpyHostToDevice, stream);
     cudaMemcpyAsync(d_key_data, h_key_data, KEY_SIZE_BYTES, cudaMemcpyHostToDevice, stream);
     cudaMemcpyAsync(d_hash_no_sig_data, h_hash_no_sig_data, HASH_NO_SIG_SIZE_BYTES, cudaMemcpyHostToDevice, stream);
     cudaMemcpyAsync(d_nonce_data, h_nonce_data, NONCE_SIZE_BYTES, cudaMemcpyHostToDevice, stream);
     cudaMemcpyAsync(d_utxo_set_idx4host, h_utxo_set_idx4host, d_utxo_set_idx4host_BYTES, cudaMemcpyHostToDevice, stream);
-    
+
 
     // Stage1 stuff
 
@@ -3171,8 +3230,8 @@ int main( int argc, char* argv[] ) {
     cudaMemcpyAsync(d_n_time, h_n_time, N_TIME_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
     cudaMemcpyAsync(d_prev_stake_hash, h_prev_stake_hash, PREV_STAKE_HASH_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
     cudaMemcpyAsync(d_prev_stake_n, h_prev_stake_n, PREV_STAKE_N_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
-    cudaMemcpyAsync(d_block_sig, h_block_sig, BLOCK_SIG_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream); 
-    cudaMemcpyAsync(d_stake_modifier, h_stake_modifier, STAKE_MODIFIER_BYTES, cudaMemcpyHostToDevice, stream); 
+    cudaMemcpyAsync(d_block_sig, h_block_sig, BLOCK_SIG_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
+    cudaMemcpyAsync(d_stake_modifier, h_stake_modifier, STAKE_MODIFIER_BYTES, cudaMemcpyHostToDevice, stream);
 
 
     // Wait for the kernel to complete
@@ -3190,15 +3249,15 @@ int main( int argc, char* argv[] ) {
     cudaMemcpy(d_n_time, h_n_time, N_TIME_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice);
     cudaMemcpy(d_prev_stake_hash, h_prev_stake_hash, PREV_STAKE_HASH_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice);
     cudaMemcpy(d_prev_stake_n, h_prev_stake_n, PREV_STAKE_N_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_block_sig, h_block_sig, BLOCK_SIG_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice); // 1st byte is length   either 70 or 71  unused last byte if 70 bytes 
-    cudaMemcpy(d_stake_modifier, h_stake_modifier, STAKE_MODIFIER_BYTES, cudaMemcpyHostToDevice); // 1st byte is length   either 70 or 71  unused last byte if 70 bytes 
+    cudaMemcpy(d_block_sig, h_block_sig, BLOCK_SIG_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice); // 1st byte is length   either 70 or 71  unused last byte if 70 bytes
+    cudaMemcpy(d_stake_modifier, h_stake_modifier, STAKE_MODIFIER_BYTES, cudaMemcpyHostToDevice); // 1st byte is length   either 70 or 71  unused last byte if 70 bytes
     //===========================================KERNEL======================================================
     // We are starting the KERNEL with NO DATA - This is intentional, data will be given to it on the fly from the BTCW node.
     cuda_miner<<<128, 256, 0, kernel_stream>>>(d_gpu_num, d_is_stage1, d_key_data, d_ctx_data, d_hash_no_sig_data, d_nonce_data, d_utxo_set_idx4host, d_utxo_set_time4host, d_stake_modifier, d_utxos_block_from_time, d_utxos_hash, d_utxos_n, d_start_time, d_hash_merkle_root, d_hash_prev_block, d_n_bits, d_n_time, d_prev_stake_hash, d_prev_stake_n, d_block_sig);
 
     //=================================================================================================================
 
-  
+
 
     // Open shared memory
     int shm_fd = shm_open(SHM_NAME, O_RDWR, 0666);
@@ -3230,121 +3289,134 @@ int main( int argc, char* argv[] ) {
     volatile SharedData* mapped_data = (volatile SharedData*) shared_data;
 
 
-    uint32_t throttle = 0x0;
-    bool is_init = false;
+
 
     while ( true )
     {
 
-        // one time init
-        if ( !is_init )
+        // (A) Проверяем, не пришли ли новые данные:
+        if ( shared_data->is_data_ready )
         {
+            // Узнаём, Stage1 или Stage2
+            if (shared_data->is_stage1) {
+                h_is_stage1[0] = 0xFF;
+            } else {
+                h_is_stage1[0] = 0;
+            }
+            // Копируем флаг на GPU
+            cudaMemcpyAsync(d_is_stage1, h_is_stage1, 1, cudaMemcpyHostToDevice, stream);
+
+            cudaMemcpyAsync(d_ctx_data, h_ctx_data, CTX_SIZE_BYTES, cudaMemcpyHostToDevice, stream);
+            cudaMemcpyAsync(d_key_data, h_key_data, KEY_SIZE_BYTES, cudaMemcpyHostToDevice, stream);
+            cudaMemcpyAsync(d_hash_no_sig_data, h_hash_no_sig_data, HASH_NO_SIG_SIZE_BYTES, cudaMemcpyHostToDevice, stream);
+
             cudaMemcpyAsync(d_utxos_block_from_time, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_utxos_block_from_time[0])), WALLET_UTXOS_TIME_FROM_BYTES*WALLET_UTXOS_LENGTH, cudaMemcpyHostToDevice, stream);
             cudaMemcpyAsync(d_utxos_hash, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_utxos_hash[0])), WALLET_UTXOS_HASH_BYTES*WALLET_UTXOS_LENGTH, cudaMemcpyHostToDevice, stream);
             cudaMemcpyAsync(d_utxos_n, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_utxos_n[0])), WALLET_UTXOS_N_BYTES*WALLET_UTXOS_LENGTH, cudaMemcpyHostToDevice, stream);
-            is_init = true;
-        }
-        
-        if ( (throttle % 0x3) == 0 )
-        {
 
-        
-            if ( shared_data->is_stage1 )
-            {
+            if ( shared_data->is_stage1 ){
                 // we are in stage1
-                printf("STAGE1 BLOCK DATA - CPU SIDE\n");
+                    printf("STAGE1 BLOCK DATA - CPU SIDE\n");
+                    cudaMemcpyAsync(d_start_time, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_start_time[0])), START_TIME_BYTES, cudaMemcpyHostToDevice, stream);
+                    cudaMemcpyAsync(d_stake_modifier, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_stake_modifier[0])), STAKE_MODIFIER_BYTES, cudaMemcpyHostToDevice, stream);
 
-                
-                cudaMemcpyAsync(d_start_time, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_start_time[0])), START_TIME_BYTES, cudaMemcpyHostToDevice, stream);
-                cudaMemcpyAsync(d_stake_modifier, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_stake_modifier[0])), STAKE_MODIFIER_BYTES, cudaMemcpyHostToDevice, stream);
-                
-                cudaMemcpyAsync(d_hash_merkle_root, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_hash_merkle_root[0])), HASH_MERKLE_ROOT_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
-                cudaMemcpyAsync(d_hash_prev_block, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_hash_prev_block[0])), HASH_PREV_BLOCK_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
-                cudaMemcpyAsync(d_n_bits, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_n_bits[0])), N_BITS_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
-                cudaMemcpyAsync(d_n_time, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_n_time[0])), N_TIME_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
-                cudaMemcpyAsync(d_prev_stake_hash, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_prev_stake_hash[0])), PREV_STAKE_HASH_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
-                cudaMemcpyAsync(d_prev_stake_n, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_prev_stake_n[0])), PREV_STAKE_N_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
-                cudaMemcpyAsync(d_block_sig, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_block_sig[0])), BLOCK_SIG_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream); // 1st byte is length   either 70 or 71  unused last byte if 70 bytes 
+                    cudaMemcpyAsync(d_hash_merkle_root, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_hash_merkle_root[0])), HASH_MERKLE_ROOT_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
+                    cudaMemcpyAsync(d_hash_prev_block, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_hash_prev_block[0])), HASH_PREV_BLOCK_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
+                    cudaMemcpyAsync(d_n_bits, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_n_bits[0])), N_BITS_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
+                    cudaMemcpyAsync(d_n_time, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_n_time[0])), N_TIME_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
+                    cudaMemcpyAsync(d_prev_stake_hash, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_prev_stake_hash[0])), PREV_STAKE_HASH_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
+                    cudaMemcpyAsync(d_prev_stake_n, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_prev_stake_n[0])), PREV_STAKE_N_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream);
+                    cudaMemcpyAsync(d_block_sig, const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->stage1_data.h_block_sig[0])), BLOCK_SIG_BYTES*HDR_DEPTH, cudaMemcpyHostToDevice, stream); // 1st byte is length   either 70 or 71  unused last byte if 70 bytes
 
+            } else {
+                is_stage1 = false;
+                printf("STAGE2 BLOCK DATA - CPU SIDE\n");
+                // Data set from BTCW node
+                memcpy( &h_key_data[0], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[0])), 32 );
+                memcpy( &h_ctx_data[0],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[32])), 8 );
+                memcpy( &h_ctx_data[8],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[40])), 8 );
+                memcpy( &h_ctx_data[16], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[48])), 8 );
+                memcpy( &h_ctx_data[24], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[56])), 8 );
 
-            }
-            else
-            {
+                memcpy( &h_ctx_data[32],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[64])), 8 );
+                memcpy( &h_ctx_data[40],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[72])), 8 );
+                memcpy( &h_ctx_data[48],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[80])), 8 );
+                memcpy( &h_ctx_data[56],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[88])), 8 );
+                memcpy( &h_ctx_data[64],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[96])), 8 );
+                memcpy( &h_ctx_data[72],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[104])), 8 );
+                memcpy( &h_ctx_data[80],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[112])), 8 );
+                memcpy( &h_ctx_data[88],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[120])), 8 );
+                memcpy( &h_ctx_data[96],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[128])), 8 );
+                memcpy( &h_ctx_data[104], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[136])), 8 );
+                memcpy( &h_ctx_data[112], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[144])), 8 );
+                memcpy( &h_ctx_data[120], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[152])), 8 );
+                memcpy( &h_ctx_data[128], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[160])), 8 );
+                memcpy( &h_ctx_data[136], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[168])), 8 );
+                memcpy( &h_ctx_data[144], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[176])), 8 );
 
-                // we are in stage2
-
-                //if ( is_stage1 )
-                //{
-                    // we need to update our state. this is a transition. Copy over the data for stage2.
-                    is_stage1 = false;
-
-                    //Host update the data, send it to the GPU
-                    printf("STAGE2 BLOCK DATA - CPU SIDE\n");
-
-
-                    // Data set from BTCW node
-                    memcpy( &h_key_data[0], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[0])), 32 );
-
-
-                    memcpy( &h_ctx_data[0],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[32])), 8 );
-                    memcpy( &h_ctx_data[8],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[40])), 8 );
-                    memcpy( &h_ctx_data[16], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[48])), 8 );
-                    memcpy( &h_ctx_data[24], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[56])), 8 );
-
-                    memcpy( &h_ctx_data[32],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[64])), 8 );
-                    memcpy( &h_ctx_data[40],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[72])), 8 );
-                    memcpy( &h_ctx_data[48],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[80])), 8 );
-                    memcpy( &h_ctx_data[56],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[88])), 8 );
-                    memcpy( &h_ctx_data[64],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[96])), 8 );
-                    memcpy( &h_ctx_data[72],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[104])), 8 );
-                    memcpy( &h_ctx_data[80],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[112])), 8 );
-                    memcpy( &h_ctx_data[88],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[120])), 8 );
-                    memcpy( &h_ctx_data[96],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[128])), 8 );
-                    memcpy( &h_ctx_data[104], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[136])), 8 );
-                    memcpy( &h_ctx_data[112], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[144])), 8 );
-                    memcpy( &h_ctx_data[120], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[152])), 8 );
-                    memcpy( &h_ctx_data[128], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[160])), 8 );
-                    memcpy( &h_ctx_data[136], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[168])), 8 );
-                    memcpy( &h_ctx_data[144], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[176])), 8 );
-
-                    memcpy( &h_ctx_data[152], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[184])), 4 );
-                    memcpy( &h_ctx_data[156], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[188])), 4 );
+                memcpy( &h_ctx_data[152], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[184])), 4 );
+                memcpy( &h_ctx_data[156], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[188])), 4 );
 
 
-                    memcpy( &h_hash_no_sig_data[0],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[192])), 8);
-                    memcpy( &h_hash_no_sig_data[8],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[200])), 8);
-                    memcpy( &h_hash_no_sig_data[16], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[208])), 8);
-                    memcpy( &h_hash_no_sig_data[24], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[216])), 8);
+                memcpy( &h_hash_no_sig_data[0],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[192])), 8);
+                memcpy( &h_hash_no_sig_data[8],  const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[200])), 8);
+                memcpy( &h_hash_no_sig_data[16], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[208])), 8);
+                memcpy( &h_hash_no_sig_data[24], const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->data[216])), 8);
 
 
-                    // Copy the modified data from the host back to the GPU asynchronously  
-                    cudaMemcpyAsync(d_ctx_data, h_ctx_data, CTX_SIZE_BYTES, cudaMemcpyHostToDevice, stream);
-                    cudaMemcpyAsync(d_key_data, h_key_data, KEY_SIZE_BYTES, cudaMemcpyHostToDevice, stream);
-                    cudaMemcpyAsync(d_hash_no_sig_data, h_hash_no_sig_data, HASH_NO_SIG_SIZE_BYTES, cudaMemcpyHostToDevice, stream);
-                //}
+                // Copy the modified data from the host back to the GPU asynchronously
+                cudaMemcpyAsync(d_ctx_data, h_ctx_data, CTX_SIZE_BYTES, cudaMemcpyHostToDevice, stream);
+                cudaMemcpyAsync(d_key_data, h_key_data, KEY_SIZE_BYTES, cudaMemcpyHostToDevice, stream);
+                cudaMemcpyAsync(d_hash_no_sig_data, h_hash_no_sig_data, HASH_NO_SIG_SIZE_BYTES, cudaMemcpyHostToDevice, stream);
 
             }
+            // Сбрасываем флаг
+            shared_data->is_data_ready = false;
+        }
+        // (B) Считываем результаты (nonce, utxo idx/time)
+        cudaMemcpyAsync(d_nonce_data, h_nonce_data, NONCE_SIZE_BYTES, cudaMemcpyDeviceToHost, stream);
+        cudaMemcpyAsync(d_utxo_set_idx4host, h_utxo_set_idx4host, d_utxo_set_idx4host_BYTES, cudaMemcpyDeviceToHost, stream);
+        cudaMemcpyAsync(h_utxo_set_time4host, d_utxo_set_time4host,  4, cudaMemcpyDeviceToHost, stream);
 
+        cudaStreamSynchronize(stream);
+
+        //  (B1) Проверяем nonce
+        uint64_t nonce_found = 0;
+        memcpy(&nonce_found, h_nonce_data, 8);
+        if (nonce_found != 0) {
+            // Майнер нашёл PoW блок
+            shared_data->nonce = nonce_found;
+            printf("FOUND POW nonce = %llu\n",(unsigned long long)nonce_found);
+
+            // Сбросим локально в 0, чтобы заново ловить новое решение
+            memset(h_nonce_data, 0, 8);
+            cudaMemcpyAsync(d_nonce_data, h_nonce_data, 8, cudaMemcpyHostToDevice, stream);
         }
 
-        throttle++;
+        //  (B2) Проверяем utxo_set_idx/time
+        uint32_t idx_found=0, time_found=0;
+        memcpy(&idx_found,  h_utxo_set_idx4host,  4);
+        memcpy(&time_found, h_utxo_set_time4host, 4);
+        if (idx_found != 0) {
+            // Майнер нашёл PoS решение
+            shared_data->utxo_set_idx4host  = idx_found;
+            shared_data->utxo_set_time4host = time_found;
 
-        // convert from bool to 1 byte
-        if ( shared_data->is_stage1 )
-        {
-            h_is_stage1[0] = 0xFF;
+            printf("FOUND POS utxo idx = %u  time = %u\n", idx_found, time_found);
+
+            // Сбрасываем
+            uint32_t zero=0;
+            memcpy(h_utxo_set_idx4host,  &zero, 4);
+            memcpy(h_utxo_set_time4host, &zero, 4);
+            cudaMemcpyAsync(d_utxo_set_idx4host,  h_utxo_set_idx4host,  4, cudaMemcpyHostToDevice, stream);
+            cudaMemcpyAsync(d_utxo_set_time4host, h_utxo_set_time4host, 4, cudaMemcpyHostToDevice, stream);
         }
-        else
-        {
-            h_is_stage1[0] = 0;
-        }
 
-        cudaMemcpyAsync(d_is_stage1, h_is_stage1, 1, cudaMemcpyHostToDevice, stream);
 
-        cudaMemcpyAsync(const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->nonce)), d_nonce_data, NONCE_SIZE_BYTES, cudaMemcpyDeviceToHost, stream); 
+        cudaMemcpyAsync(const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->nonce)), d_nonce_data, NONCE_SIZE_BYTES, cudaMemcpyDeviceToHost, stream);
 
-        cudaMemcpyAsync(const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->utxo_set_idx4host)), d_utxo_set_idx4host, d_utxo_set_idx4host_BYTES, cudaMemcpyDeviceToHost, stream); 
-        cudaMemcpyAsync(const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->utxo_set_time4host)), d_utxo_set_time4host, d_utxo_set_idx4host_BYTES, cudaMemcpyDeviceToHost, stream); 
+        cudaMemcpyAsync(const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->utxo_set_idx4host)), d_utxo_set_idx4host, d_utxo_set_idx4host_BYTES, cudaMemcpyDeviceToHost, stream);
+        cudaMemcpyAsync(const_cast<void*>(reinterpret_cast<const volatile void*>(&shared_data->utxo_set_time4host)), d_utxo_set_time4host, d_utxo_set_idx4host_BYTES, cudaMemcpyDeviceToHost, stream);
 
 
         usleep(500000);
@@ -3426,7 +3498,7 @@ int main( int argc, char* argv[] ) {
 
 
     munmap(shared_data, sizeof(SharedData));
-    close(shm_fd);    
+    close(shm_fd);
 
     return 0;
 }
